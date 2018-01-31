@@ -49,10 +49,10 @@
 
 
     <div class="columns p-2">
-      <div class="col-6 pt-2">
+      <div class="column col-lg-6 col-md-12 pt-2">
         <p>Affichage des entrées <b>{{model.offset + 1}}</b> à <b>{{model.offset + model.range}}</b> sur <b>{{model.filtered_data.length}}</b>.</p>
       </div>
-      <div class="col-6">
+      <div class="column col-lg-6 col-md-12">
         <ul id="pagination" class="pagination float-right" v-if="model.filtered_data.length > model.range">
           <li class="page-item" v-bind:class="{ disabled: model.offset - model.range < 0 }">
             <a href="#" tabindex="-1" @click="model.previous()">Précédent</a>

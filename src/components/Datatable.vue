@@ -22,7 +22,7 @@
     <br>
     <br>
 
-    <table class="table table-hover">
+    <table class="table table-striped table-hover">
       <thead>
       <tr>
         <th v-for="column in model.columns" @click="model.order(column)">
@@ -104,7 +104,7 @@
 
 <script>
   let Model = require('./model');
-  let model = new Model.Model('https://raw.githubusercontent.com/vega/ipyvega/master/notebooks/cars.json');
+  let model = new Model.Model('../assets/MOCK_DATA.json');
 
   export default {
     name: "datatable",

@@ -125,6 +125,10 @@
     text-align: center;
   }
 
+  th {
+    cursor: pointer;
+  }
+
   select, input {
     width: auto;
   }

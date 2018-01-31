@@ -66,7 +66,7 @@ export class Model {
     let _this = this;
     this.filtered_data = this.raw_data.filter(row => {
       for (let key of Object.keys(row)) {
-        if (String(row[key]).includes(_this.searchbar))
+        if (String(row[key]).toLowerCase().includes(_this.searchbar.toLowerCase()))
           return true;
       }
       return false;

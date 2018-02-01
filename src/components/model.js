@@ -76,6 +76,19 @@ export class Model {
       this.order(this.ordering);
   }
 
+  filter_by_column(column, content, perform_order) {
+    this.selected_index = 0;
+    this.offset = 0;
+
+    this.filtered_data = this.raw_data.filter(row => {
+      return String(row[column]).toLowerCase().includes(content.toLowerCase());
+    });
+
+    this.displayed_data = this.filtered_data.slice(0, this.range);
+    if (perform_order)
+      this.order(this.ordering);
+  }
+
   /* ordering au clic sur le nom des colonnes */
   order(column) {
     if (this.ordering === column && this.ordering.slice(0, 1) === '-')

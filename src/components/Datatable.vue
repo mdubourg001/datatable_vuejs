@@ -57,6 +57,12 @@
         </th>
         <th>Actions</th>
       </tr>
+      <tr>
+        <th v-for="column in model.columns">
+          <input class="form-input" type="text" @input="filter_by_column(column, false)" :id="column + '-input'">
+        </th>
+        <th></th>
+      </tr>
       </thead>
 
       <tbody>
@@ -171,6 +177,11 @@
           alert("La ligne a bien été insérée");
           this.close_edit();
         }
+      },
+      filter_by_column: function (column, perform_order) {
+        let selector = "#" + column + '-input';
+        let content = document.querySelector(selector).value;
+        model.filter_by_column(column, content, perform_order);
       }
     }
   }

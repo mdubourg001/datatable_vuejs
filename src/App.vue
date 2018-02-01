@@ -19,7 +19,7 @@
 
 <style>
   body {
-    padding: 50px;
+    padding: 30px 50px;
     font-family: Cantarell, sans-serif;
   }
 

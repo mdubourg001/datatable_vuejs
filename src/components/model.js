@@ -76,12 +76,13 @@ export class Model {
       this.order(this.ordering);
   }
 
-  filter_by_column(column, content, perform_order) {
+  filter_by_column(criterias, perform_order) {
     this.selected_index = 0;
     this.offset = 0;
-
     this.filtered_data = this.raw_data.filter(row => {
-      return String(row[column]).toLowerCase().includes(content.toLowerCase());
+      return Object.keys(criterias).every(function (key) {
+        return (String(row[key]).toLowerCase().includes(criterias[key].toLowerCase()));
+      });
     });
 
     this.displayed_data = this.filtered_data.slice(0, this.range);

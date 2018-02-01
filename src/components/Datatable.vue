@@ -2,7 +2,7 @@
 
   <div>
 
-    <button class="btn btn-error" @click="open_edit">Add</button>
+    <button class="btn btn-error" @click="open_edit">Ajouter un ligne</button>
     <div class="modal" id="edit-modal">
       <div class="modal-container">
         <div class="modal-header">
@@ -28,7 +28,7 @@
     </div>
 
     <div class="form-group d-inline-block">
-      <label class="label label-rounded label-warning p-2 d-inline-block" for="range-select">Range:</label>
+      <label class="label label-rounded label-warning p-2 d-inline-block" for="range-select">Éléments par page:</label>
       <select class="form-select d-inline-block" id="range-select" name="range"
               v-model="model.range" @change="model.update_range()">
         <option value="10">10</option>
@@ -59,7 +59,7 @@
       </tr>
       <tr>
         <th v-for="column in model.columns">
-          <input class="form-input" type="text" @input="filter_by_column(column, false)" :id="column + '-input'">
+          <input class="form-input filter-input" type="text" @input="filter_by_column(false)" :name="column">
         </th>
         <th></th>
       </tr>
@@ -178,10 +178,14 @@
           this.close_edit();
         }
       },
-      filter_by_column: function (column, perform_order) {
-        let selector = "#" + column + '-input';
-        let content = document.querySelector(selector).value;
-        model.filter_by_column(column, content, perform_order);
+      filter_by_column: function (perform_order) {
+        let inputs = document.getElementsByClassName('filter-input');
+        let criterias = {};
+        for (let i = 0 ; i < inputs.length ; i++) {
+          if (inputs[i].value && inputs[i].value !== "")
+            criterias[inputs[i].getAttribute('name')] = inputs[i].value;
+        }
+        model.filter_by_column(criterias, perform_order);
       }
     }
   }

@@ -1,4 +1,3 @@
-
 export class Model {
 
   constructor(mock_url) {
@@ -88,7 +87,7 @@ export class Model {
 
     let _this = this;
     this.filtered_data.sort(
-      function(a, b) {
+      function (a, b) {
         if (_this.ordering.slice(0, 1) !== '-') {
           if (a[_this.ordering] < b[_this.ordering]) return -1;
           if (a[_this.ordering] > b[_this.ordering]) return 1;
@@ -124,13 +123,13 @@ export class Model {
   }
 
   remove(id) {
-    for (let i = 0 ; i < this.filtered_data.length ; i++) {
+    for (let i = 0; i < this.filtered_data.length; i++) {
       if (this.filtered_data[i].id === id) {
         this.filtered_data.splice(i, 1);
         break;
       }
     }
-    for (let i = 0 ; i < this.raw_data.length ; i++) {
+    for (let i = 0; i < this.raw_data.length; i++) {
       if (this.raw_data[i].id === id) {
         this.raw_data.splice(i, 1);
         break;
@@ -138,6 +137,11 @@ export class Model {
     }
 
     this.displayed_data = this.filtered_data.slice(this.offset, this.offset + this.range);
+    if (this.displayed_data.length === 0) {
+      this.offset -= this.range;
+      this.displayed_data = this.filtered_data.slice(this.offset, this.offset + this.range);
+    }
+
     alert("La ligne d'identifiant " + String(id) + " a bien été supprimée.");
   }
 }

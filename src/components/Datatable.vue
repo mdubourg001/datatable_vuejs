@@ -2,7 +2,7 @@
 
   <div>
 
-    <button class="btn btn-error" @click="open_edit">Ajouter un ligne</button>
+    <button class="btn btn-error" @click="open_edit">Ajouter une ligne</button>
     <div class="modal" id="edit-modal">
       <div class="modal-container">
         <div class="modal-header">
@@ -20,7 +20,7 @@
                 <input class="form-input" type="text" :name="col"/>
               </div>
             </div>
-            <br />
+            <br/>
             <input type="submit" class="btn btn-error input-group-btn float-right" value="Insérer">
           </form>
         </div>
@@ -40,8 +40,11 @@
 
     <div class="form-group d-inline-block float-right">
       <label class="label label-rounded label-warning p-2 d-inline-block" for="searchbar">Recherche: </label>
-      <input id="searchbar" class="form-input d-inline-block" type="text" placeholder="Tri par champs..."
-             v-model="model.searchbar" @input="model.filter(false)">
+      <div class="has-icon-left d-inline-block">
+        <input id="searchbar" class="form-input" type="text" placeholder="Tri par champs..."
+               v-model="model.searchbar" @input="model.filter(false)">
+        <i class="icon form-icon icon-search"></i>
+      </div>
     </div>
 
     <br>
@@ -59,7 +62,8 @@
       </tr>
       <tr>
         <th v-for="column in model.columns">
-          <input class="form-input filter-input" type="text" @input="filter_by_column(false)" :name="column">
+          <input class="form-input filter-input" type="text" @input="filter_by_column(false)"
+                 :name="column" :placeholder="'Tri par ' + column + '...'">
         </th>
         <th></th>
       </tr>
@@ -91,7 +95,8 @@
 
     <div class="columns p-2">
       <div class="column col-lg-6 col-md-12 pt-2">
-        <p>Affichage des entrées <b>{{model.offset + 1}}</b> à <b>{{model.offset + model.range}}</b> sur <b>{{model.filtered_data.length}}</b>.</p>
+        <p>Affichage des entrées <b>{{model.offset + 1}}</b> à <b>{{model.offset + model.range}}</b> sur <b>{{model.filtered_data.length}}</b>.
+        </p>
       </div>
       <div class="column col-lg-6 col-md-12">
         <ul id="pagination" class="pagination float-right" v-if="model.filtered_data.length > model.range">
@@ -166,7 +171,7 @@
         let inputs = form.getElementsByTagName('input');
 
         let formdata = {};
-        for(let i = 0; i < inputs.length; i++){
+        for (let i = 0; i < inputs.length; i++) {
           formdata[inputs[i].name] = inputs[i].value;
         }
         if (Array(formdata).every((x) => formdata[x] === ""))
@@ -181,7 +186,7 @@
       filter_by_column: function (perform_order) {
         let inputs = document.getElementsByClassName('filter-input');
         let criterias = {};
-        for (let i = 0 ; i < inputs.length ; i++) {
+        for (let i = 0; i < inputs.length; i++) {
           if (inputs[i].value && inputs[i].value !== "")
             criterias[inputs[i].getAttribute('name')] = inputs[i].value;
         }

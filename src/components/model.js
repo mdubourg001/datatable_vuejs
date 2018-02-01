@@ -76,6 +76,7 @@ export class Model {
       this.order(this.ordering);
   }
 
+  /* filtrage lors de l'input dans l'une des barres des recherche par colonne */
   filter_by_column(criterias, perform_order) {
     this.selected_index = 0;
     this.offset = 0;
@@ -151,8 +152,9 @@ export class Model {
     }
 
     this.displayed_data = this.filtered_data.slice(this.offset, this.offset + this.range);
-    if (this.displayed_data.length === 0) {
+    if (this.displayed_data.length === 0 && this.selected_index > 0) {
       this.offset -= this.range;
+      this.selected_index -= 1;
       this.displayed_data = this.filtered_data.slice(this.offset, this.offset + this.range);
     }
 

@@ -1,7 +1,7 @@
 
 export class Model {
 
-  constructor(mock_path) {
+  constructor(mock_url) {
     /* les datas en JSON comme on les récupère sur de la requête */
     this.raw_data = JSON.parse(http_get(mock_url));
     /* sera notre set de données après ordering et filtering */
@@ -103,6 +103,23 @@ export class Model {
     this.displayed_data = this.filtered_data.slice(this.offset, this.offset + this.range);
   }
 
+  add(data) {
+    this.raw_data.push(data);
+    this.offset = 0;
+    this.selected_index = 0;
+    this.filtered_data = this.raw_data;
+    this.displayed_data = this.filtered_data.slice(this.offset, this.offset + this.range);
+  }
+
+  edit(data) {
+
+  }
+
+  remove(row) {
+    this.columns.forEach(function (c) {
+      console.log(row[c])
+    })
+  }
 }
 
 

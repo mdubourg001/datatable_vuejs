@@ -2,6 +2,31 @@
 
   <div>
 
+    <button class="btn btn-error" @click="open_edit">Add</button>
+    <div class="modal" id="edit-modal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h4 class="d-inline-block">Ajouter un élément</h4>
+          <button class="btn btn-error modal-close float-right" @click="close_edit">✖</button>
+        </div>
+        <div class="divider"></div>
+        <div class="modal-body">
+          <form class="form-horizontal" action="/" @submit.prevent="submit_edit" name="edit-form">
+            <div class="form-group" v-for="col in model.columns">
+              <div class="col-3">
+                <label class="form-label">{{col}}: </label>
+              </div>
+              <div class="col-9">
+                <input class="form-input" type="text" :name="col"/>
+              </div>
+            </div>
+            <br />
+            <input type="submit" class="btn btn-error input-group-btn float-right" value="Insérer">
+          </form>
+        </div>
+      </div>
+    </div>
+
     <div class="form-group d-inline-block">
       <label class="label label-rounded label-warning p-2 d-inline-block" for="range-select">Range:</label>
       <select class="form-select d-inline-block" id="range-select" name="range"
@@ -30,6 +55,7 @@
           <b v-if="model.ordering === column">&#9660;</b>
           <b v-if="model.ordering === '-' + column">&#9650;</b>
         </th>
+        <th>Actions</th>
       </tr>
       </thead>
 
@@ -37,6 +63,15 @@
       <tr v-for="row in model.displayed_data">
         <td v-for="column in model.columns">
           {{ row[column] }}
+        </td>
+        <td>
+          <div class="popover popover-left">
+            <button class="btn">...</button>
+            <div class="popover-container">
+              <button class="btn">Éditer</button>
+              <button class="btn btn-error" @click="model.remove(row)">Supprimer</button>
+            </div>
+          </div>
         </td>
       </tr>
       </tbody>
@@ -104,13 +139,37 @@
 
 <script>
   let Model = require('./model');
-  let model = new Model.Model('../assets/MOCK_DATA.json');
+  let model = new Model.Model('https://raw.githubusercontent.com/mdubourg001/datatable_vuejs/master/src/assets/MOCK_DATA.json');
 
   export default {
     name: "datatable",
     data() {
       return {
         model: model
+      }
+    },
+    methods: {
+      open_edit: function () {
+        document.getElementById('edit-modal').classList.add('active');
+      },
+      close_edit: function () {
+        document.getElementById('edit-modal').classList.remove('active');
+      },
+      submit_edit: function () {
+        let form = document.forms.namedItem('edit-form');
+        let inputs = form.getElementsByTagName('input');
+
+        let formdata = {};
+        for(let i = 0; i < inputs.length; i++){
+          formdata[inputs[i].name] = inputs[i].value;
+        }
+        if (Array(formdata).every((x) => !formdata[x]))
+          alert('Une ligne entièrement vide ne peut pas être insérée.');
+
+        else {
+          model.add(formdata);
+          this.close_edit();
+        }
       }
     }
   }
@@ -131,5 +190,29 @@
 
   select, input {
     width: auto;
+  }
+
+  table .popover-container {
+    padding: 15px;
+    background-color: white;
+    width: auto;
+    border-radius: 5px;
+  }
+
+  .popover-container button {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+
+  .modal-container {
+    padding: 30px;
+  }
+
+  .modal input:not([type="submit"]) {
+    width: 100%;
+  }
+
+  .modal label {
+    text-transform: capitalize;
   }
 </style>

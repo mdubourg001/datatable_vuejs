@@ -2,98 +2,117 @@
 
   <div>
 
-    <button class="btn btn-error" @click="open_edit">Ajouter une ligne</button>
-    <div class="modal" id="edit-modal">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h4 class="d-inline-block">Ajouter un élément</h4>
-          <button class="btn btn-error modal-close float-right" @click="close_edit">✖</button>
-        </div>
-        <div class="divider"></div>
-        <div class="modal-body">
-          <form class="form-horizontal" action="/" @submit.prevent="submit_edit" name="edit-form">
-            <div class="form-group" v-for="col in model.columns" v-if="col !== 'id'">
-              <div class="col-3">
-                <label class="form-label">{{col}}: </label>
+    <div class="container">
+      <div class="columns">
+        <div class="col-6 col-md-4 col-sm-12">
+          <button class="btn btn-error d-inline-block" @click="open_edit">Ajouter une ligne</button>
+          <div class="modal" id="edit-modal">
+            <div class="modal-container">
+              <div class="modal-header">
+                <h4 class="d-inline-block">Ajouter un élément</h4>
+                <button class="btn btn-error modal-close float-right" @click="close_edit">✖</button>
               </div>
-              <div class="col-9">
-                <input class="form-input" type="text" :name="col"/>
+              <div class="divider"></div>
+              <div class="modal-body">
+                <form class="form-horizontal" action="/" @submit.prevent="submit_edit" name="edit-form">
+                  <div class="form-group" v-for="col in model.columns" v-if="col !== 'id'">
+                    <div class="col-3">
+                      <label class="form-label">{{col}}: </label>
+                    </div>
+                    <div class="col-9">
+                      <input class="form-input" type="text" :name="col"/>
+                    </div>
+                  </div>
+                  <br/>
+                  <input type="submit" class="btn btn-error input-group-btn float-right" value="Insérer">
+                </form>
               </div>
-            </div>
-            <br/>
-            <input type="submit" class="btn btn-error input-group-btn float-right" value="Insérer">
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <div class="form-group d-inline-block">
-      <label class="label label-rounded label-warning p-2 d-inline-block" for="range-select">Éléments par page:</label>
-      <select class="form-select d-inline-block" id="range-select" name="range"
-              v-model="model.range" @change="model.update_range()">
-        <option value="10">10</option>
-        <option value="25">25</option>
-        <option value="50">50</option>
-        <option value="100">100</option>
-      </select>
-    </div>
-
-    <div class="form-group d-inline-block float-right">
-      <label class="label label-rounded label-warning p-2 d-inline-block" for="searchbar">Recherche: </label>
-      <div class="has-icon-left d-inline-block">
-        <input id="searchbar" class="form-input" type="text" placeholder="Tri par champs..."
-               v-model="model.searchbar" @input="model.filter(false)">
-        <i class="icon form-icon icon-search"></i>
-      </div>
-    </div>
-
-    <br>
-    <br>
-
-    <table class="table table-striped table-hover">
-      <thead>
-      <tr>
-        <th v-for="column in model.columns" @click="model.order(column)">
-          {{ column }}
-          <b v-if="model.ordering === column">&#9660;</b>
-          <b v-if="model.ordering === '-' + column">&#9650;</b>
-        </th>
-        <th>Actions</th>
-      </tr>
-      <tr>
-        <td v-for="column in model.columns">
-          <input class="form-input filter-input" type="text" @input="filter_by_column(false)"
-                 :name="column" :placeholder="'Tri par ' + column + '...'">
-        </td>
-        <td><!-- Vide pour la colonne Actions --></td>
-      </tr>
-      </thead>
-
-      <tbody>
-      <tr v-for="row in model.displayed_data">
-        <td v-for="column in model.columns">
-          <input v-bind:class="{'label-lookalike': column === 'id'}" type="text" :name="column"
-                 v-bind:disabled="column === 'id'" class="column-value text-center"
-                 v-model="model.currently_edited_data[column]" v-if="model.currently_edited_id === row['id']">
-          <span v-if="model.currently_edited_id !== row['id']">{{row[column]}}</span>
-        </td>
-        <td v-if="model.currently_edited_id !== row['id']">
-          <div class="popover popover-left">
-            <button class="btn">...</button>
-            <div class="popover-container">
-              <button class="btn" @click="model.update_edited_row(row['id'])">Éditer</button>
-              <button class="btn btn-error" @click="model.remove(row['id'])">Supprimer</button>
             </div>
           </div>
-        </td>
-        <td v-if="model.currently_edited_id === row['id']">
-          <button class="btn btn-success tooltip" data-tooltip="Valider" @click="model.edit()">
-            <i class="icon icon-check"></i>
-          </button>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+
+          <div class="hide-md form-group d-inline-block">
+            <label class="label label-rounded label-warning p-2 d-inline-block" for="range-select">Éléments par
+              page:</label>
+            <select class="form-select d-inline-block" id="range-select" name="range"
+                    v-model="model.range" @change="model.update_range()">
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-8 col-sm-12 form-group text-right">
+          <label class="hide-xs label label-rounded label-warning p-2 d-inline-block" for="searchbar">Recherche: </label>
+          <div class="has-icon-left d-inline-block">
+            <input id="searchbar" class="form-input" type="text" placeholder="Tri par champs..."
+                   v-model="model.searchbar" @input="model.filter(false)">
+            <i class="icon form-icon icon-search"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br>
+    <br>
+
+    <div class="table-wrapper">
+      <table class="table table-striped table-hover">
+        <thead>
+        <tr>
+          <th v-for="column in model.columns" @click="model.order(column)"
+              :data-tooltip="'Cliquer pour trier par ' +  column" class="tooltip tooltip-bottom">
+            {{ column }}
+            <b v-if="model.ordering === column">&#9660;</b>
+            <b v-if="model.ordering === '-' + column">&#9650;</b>
+          </th>
+          <th>Actions</th>
+        </tr>
+        <tr class="hide-md">
+          <td v-for="column in model.columns">
+            <input class="form-input filter-input" type="text" @input="filter_by_column(false)"
+                   :name="column" :placeholder="'Tri par ' + column + '...'">
+          </td>
+          <td>
+            <button class="btn tooltip" data-tooltip="Vider les filtres" @click="clear_filters()">
+              <i class="icon icon-cross"></i>
+            </button>
+          </td>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr v-for="row in model.displayed_data">
+          <td v-for="column in model.columns">
+            <input v-bind:class="{'label-lookalike': column === 'id'}" type="text" :name="column"
+                   v-bind:disabled="column === 'id'" class="column-value text-center"
+                   v-model="model.currently_edited_data[column]" v-if="model.currently_edited_id === row['id']">
+            <span v-if="model.currently_edited_id !== row['id']">{{row[column]}}</span>
+          </td>
+          <td v-if="model.currently_edited_id !== row['id']" class="hide-sm">
+            <div class="popover popover-left">
+              <button class="btn">...</button>
+              <div class="popover-container">
+                <button class="btn" @click="model.update_edited_row(row['id'])">Éditer</button>
+                <button class="btn btn-error" @click="model.remove(row['id'])">Supprimer</button>
+              </div>
+            </div>
+          </td>
+          <td v-if="model.currently_edited_id !== row['id']" class="show-sm">
+            <button class="btn btn-error" @click="model.remove(row['id'])">
+              <i class="icon icon-delete"></i>
+            </button>
+          </td>
+          <td v-if="model.currently_edited_id === row['id']">
+            <button class="btn btn-success tooltip" data-tooltip="Valider" @click="model.edit()">
+              <i class="icon icon-check"></i>
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
 
     <br/>
     <div v-if="model.displayed_data.length === 0" class="text-center">
@@ -102,14 +121,14 @@
 
 
     <div class="columns p-2">
-      <div class="column col-lg-6 col-md-12 pt-2">
+      <div class="column col-6 col-md-12 pt-2">
         <p>Affichage des entrées <b>{{model.offset + 1}}</b> à <b>{{model.offset + model.range}}</b> sur <b>{{model.filtered_data.length}}</b>.
         </p>
       </div>
-      <div class="column col-lg-6 col-md-12">
+      <div class="column col-6 col-md-12">
         <ul id="pagination" class="pagination float-right" v-if="model.filtered_data.length > model.range">
           <li class="page-item" v-bind:class="{ disabled: model.offset - model.range < 0 }">
-            <a href="#" tabindex="-1" @click="model.previous()">Précédent</a>
+            <button class="btn btn-link" tabindex="-1" @click="model.previous()">Précédent</button>
           </li>
 
           <li class="page-item">
@@ -146,7 +165,7 @@
           </li>
 
           <li class="page-item" v-bind:class="{ disabled: model.offset + model.range >= model.filtered_data.length }">
-            <a href="#" tabindex="-1" @click="model.next()">Suivant</a>
+            <button class="btn btn-link" tabindex="-1" @click="model.next()">Suivant</button>
           </li>
         </ul>
       </div>
@@ -199,12 +218,23 @@
             criterias[inputs[i].getAttribute('name')] = inputs[i].value;
         }
         model.filter_by_column(criterias, perform_order);
+      },
+      clear_filters: function () {
+        let inputs = document.getElementsByClassName('filter-input');
+        for (let i = 0; i < inputs.length; i++) {
+          inputs[i].value = "";
+        }
+        model.filter_by_column({}, false);
       }
     }
   }
 </script>
 
 <style scoped>
+  .table-wrapper {
+    overflow-x: auto;
+  }
+
   table {
     border: 1px solid lightgray;
   }
@@ -226,6 +256,10 @@
     background-color: white;
     width: auto;
     border-radius: 5px;
+  }
+
+  table .filter-input {
+    width: 100%;
   }
 
   table .column-value {

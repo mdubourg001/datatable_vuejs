@@ -21,6 +21,10 @@ export class Model {
     this.searchbar = "";
     /* nom de la colonne selon laquelle on order */
     this.ordering = "";
+
+    this.currently_edited_id = -1;
+    this.currently_edited_data = {};
+
     this.order(this.columns[0]);
   }
 
@@ -65,6 +69,7 @@ export class Model {
     let _this = this;
     this.filtered_data = this.raw_data.filter(row => {
       for (let key of Object.keys(row)) {
+        // non respect de la casse pour la recherche
         if (String(row[key]).toLowerCase().includes(_this.searchbar.toLowerCase()))
           return true;
       }
@@ -133,8 +138,20 @@ export class Model {
     this.displayed_data = this.filtered_data.slice(this.offset, this.offset + this.range);
   }
 
-  edit(data) {
+  update_edited_row(id) {
+    this.currently_edited_id = id;
 
+    let _this = this;
+    this.raw_data.forEach(function (row) {
+      if (row['id'] === id)
+        _this.currently_edited_data = row;
+    });
+  }
+
+  edit() {
+    this.filtered_data = this.raw_data;
+    this.displayed_data = this.filtered_data.slice(this.offset, this.offset + this.range);
+    this.currently_edited_id = -1;
   }
 
   remove(id) {

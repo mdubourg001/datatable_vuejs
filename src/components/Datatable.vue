@@ -61,27 +61,35 @@
         <th>Actions</th>
       </tr>
       <tr>
-        <th v-for="column in model.columns">
+        <td v-for="column in model.columns">
           <input class="form-input filter-input" type="text" @input="filter_by_column(false)"
                  :name="column" :placeholder="'Tri par ' + column + '...'">
-        </th>
-        <th></th>
+        </td>
+        <td><!-- Vide pour la colonne Actions --></td>
       </tr>
       </thead>
 
       <tbody>
       <tr v-for="row in model.displayed_data">
         <td v-for="column in model.columns">
-          {{ row[column] }}
+          <input v-bind:class="{'label-lookalike': column === 'id'}" type="text" :name="column"
+                 v-bind:disabled="column === 'id'" class="column-value text-center"
+                 v-model="model.currently_edited_data[column]" v-if="model.currently_edited_id === row['id']">
+          <span v-if="model.currently_edited_id !== row['id']">{{row[column]}}</span>
         </td>
-        <td>
+        <td v-if="model.currently_edited_id !== row['id']">
           <div class="popover popover-left">
             <button class="btn">...</button>
             <div class="popover-container">
-              <button class="btn">Éditer</button>
+              <button class="btn" @click="model.update_edited_row(row['id'])">Éditer</button>
               <button class="btn btn-error" @click="model.remove(row['id'])">Supprimer</button>
             </div>
           </div>
+        </td>
+        <td v-if="model.currently_edited_id === row['id']">
+          <button class="btn btn-success tooltip" data-tooltip="Valider" @click="model.edit()">
+            <i class="icon icon-check"></i>
+          </button>
         </td>
       </tr>
       </tbody>
@@ -218,6 +226,18 @@
     background-color: white;
     width: auto;
     border-radius: 5px;
+  }
+
+  table .column-value {
+    background-color: white;
+    color: #3c3c3c;
+    border: 1px solid lightgray;
+    padding: 5px;
+  }
+
+  table .column-value.label-lookalike {
+    background-color: transparent;
+    border: none;
   }
 
   .popover-container button {

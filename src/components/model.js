@@ -25,6 +25,8 @@ export class Model {
     this.currently_edited_id = -1;
     this.currently_edited_data = {};
 
+    this.checked_rows = [];
+
     this.order(this.columns[0]);
   }
 
@@ -35,6 +37,7 @@ export class Model {
       this.selected_index += 1;
       this.displayed_data = this.filtered_data.slice(this.offset, this.offset + this.range);
     }
+    this.checked_rows = [];
   }
 
   /* callback lors de l'appui sur 'Précédent' (pagination) */
@@ -44,6 +47,7 @@ export class Model {
       this.selected_index -= 1;
       this.displayed_data = this.filtered_data.slice(this.offset, this.offset + this.range);
     }
+    this.checked_rows = [];
   }
 
   /* callback lors de l'appui sur un index (pagination) */
@@ -51,6 +55,7 @@ export class Model {
     this.offset = this.range * index;
     this.selected_index = index;
     this.displayed_data = this.filtered_data.slice(this.offset, this.offset + this.range);
+    this.checked_rows = [];
   }
 
   /* callback lors du changement de model.range */
@@ -79,6 +84,8 @@ export class Model {
     this.displayed_data = this.filtered_data.slice(0, this.range);
     if (perform_order)
       this.order(this.ordering);
+
+    this.checked_rows = [];
   }
 
   /* filtrage lors de l'input dans l'une des barres des recherche par colonne */
@@ -94,6 +101,8 @@ export class Model {
     this.displayed_data = this.filtered_data.slice(0, this.range);
     if (perform_order)
       this.order(this.ordering);
+
+    this.checked_rows = [];
   }
 
   /* ordering au clic sur le nom des colonnes */
@@ -121,6 +130,7 @@ export class Model {
     );
 
     this.displayed_data = this.filtered_data.slice(this.offset, this.offset + this.range);
+    this.checked_rows = [];
   }
 
   add(data) {
@@ -154,7 +164,7 @@ export class Model {
     this.currently_edited_id = -1;
   }
 
-  remove(id) {
+  remove(id, show_alert) {
     for (let i = 0; i < this.filtered_data.length; i++) {
       if (this.filtered_data[i].id === id) {
         this.filtered_data.splice(i, 1);
@@ -175,7 +185,36 @@ export class Model {
       this.displayed_data = this.filtered_data.slice(this.offset, this.offset + this.range);
     }
 
-    alert("La ligne d'identifiant " + String(id) + " a bien été supprimée.");
+    if (this.checked_rows.includes(id))
+      this.checked_rows.splice(this.checked_rows.indexOf(id), 1);
+
+    if (show_alert)
+      alert("La ligne d'identifiant " + String(id) + " a bien été supprimée.");
+  }
+
+  remove_all() {
+    let _this = this;
+    let checked_rows_copy = this.checked_rows.slice();
+    checked_rows_copy.forEach(function (id) {
+      _this.remove(id);
+    });
+    this.checked_rows = [];
+  }
+
+  check_row(id) {
+    if (this.checked_rows.includes(id))
+      this.checked_rows.splice(this.checked_rows.indexOf(id), 1);
+    else
+      this.checked_rows.push(id);
+  }
+
+  check_all() {
+    if (this.checked_rows.length >= this.range) {
+      this.checked_rows = [];
+    } else {
+      for (let r of this.displayed_data)
+        this.checked_rows.push(r['id']);
+    }
   }
 }
 

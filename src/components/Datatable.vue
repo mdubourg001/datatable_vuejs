@@ -58,10 +58,14 @@
     <br>
 
     <div class="table-wrapper">
-      <table class="table table-striped table-hover">
+      <table class="table">
         <thead>
         <tr>
           <th>
+            <button id="delete-rows-btn" class="btn btn-sm btn-error tooltip" v-if="model.checked_rows.length > 0"
+                    data-tooltip="Supprimer les lignes sélectionnés" @click="model.remove_all()">
+              <i class="icon icon-cross"></i>
+            </button>
           </th>
           <th v-for="column in model.columns" @click="model.order(column)"
               :data-tooltip="'Cliquer pour trier par ' +  column" class="tooltip tooltip-bottom">
@@ -74,7 +78,9 @@
         <tr class="hide-md">
           <td>
             <label class="form-switch">
-              <input type="checkbox">
+              <input type="checkbox" @click="model.check_all()"
+                     :checked="model.displayed_data.every((x) => model.checked_rows.includes(x['id']))
+                               && model.displayed_data.length > 0">
               <i class="form-icon"></i> Tous
             </label>
           </td>
@@ -91,7 +97,11 @@
         </thead>
 
         <tbody>
-        <tr v-for="row in model.displayed_data">
+        <tr v-for="row in model.displayed_data" v-bind:class="{checked: model.checked_rows.includes(row['id'])}">
+          <td>
+            <input type="checkbox" class="form-checkbox" :checked="model.checked_rows.includes(row['id'])"
+                   @click="model.check_row(row['id'])">
+          </td>
           <td v-for="column in model.columns">
             <input v-bind:class="{'label-lookalike': column === 'id'}" type="text" :name="column"
                    v-bind:disabled="column === 'id'" class="column-value text-center"
@@ -103,7 +113,7 @@
               <button class="btn">...</button>
               <div class="popover-container">
                 <button class="btn" @click="model.update_edited_row(row['id'])">Éditer</button>
-                <button class="btn btn-error" @click="model.remove(row['id'])">Supprimer</button>
+                <button class="btn btn-error" @click="model.remove(row['id'], true)">Supprimer</button>
               </div>
             </div>
           </td>
@@ -185,7 +195,7 @@
 
 <script>
   let Model = require('./model');
-  let model = new Model.Model('https://raw.githubusercontent.com/mdubourg001/datatable_vuejs/master/src/assets/MOCK_DATA.json');
+  let model = new Model.Model('https://raw.githubusercontent.com/mdubourg001/datatable_vuejs/master/src/assets/REDUCED_DATA.json');
 
   export default {
     name: "datatable",
@@ -245,6 +255,10 @@
 
   table {
     border: 1px solid lightgray;
+  }
+
+  table tr.checked {
+    background-color: rgba(255, 178, 0, 0.49);
   }
 
   table td, th {

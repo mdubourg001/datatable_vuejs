@@ -59,7 +59,7 @@ export class Model {
   }
 
   /* filtrage lors de l'input dans la barre de recherche */
-  filter() {
+  filter(perform_order) {
     this.selected_index = 0;
     this.offset = 0;
 
@@ -73,7 +73,8 @@ export class Model {
     });
 
     this.displayed_data = this.filtered_data.slice(0, this.range);
-    this.order(this.ordering);
+    if (perform_order)
+      this.order(this.ordering);
   }
 
   /* ordering au clic sur le nom des colonnes */
@@ -104,6 +105,13 @@ export class Model {
   }
 
   add(data) {
+    let serial = 0;
+    this.raw_data.forEach(function (r) {
+      if (r['id'] > serial)
+        serial = r['id']
+    });
+
+    data['id'] = serial + 1;
     this.raw_data.push(data);
     this.offset = 0;
     this.selected_index = 0;
@@ -115,10 +123,22 @@ export class Model {
 
   }
 
-  remove(row) {
-    this.columns.forEach(function (c) {
-      console.log(row[c])
-    })
+  remove(id) {
+    for (let i = 0 ; i < this.filtered_data.length ; i++) {
+      if (this.filtered_data[i].id === id) {
+        this.filtered_data.splice(i, 1);
+        break;
+      }
+    }
+    for (let i = 0 ; i < this.raw_data.length ; i++) {
+      if (this.raw_data[i].id === id) {
+        this.raw_data.splice(i, 1);
+        break;
+      }
+    }
+
+    this.displayed_data = this.filtered_data.slice(this.offset, this.offset + this.range);
+    alert("La ligne d'identifiant " + String(id) + " a bien été supprimée.");
   }
 }
 

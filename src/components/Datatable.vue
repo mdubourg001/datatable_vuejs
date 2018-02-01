@@ -12,7 +12,7 @@
         <div class="divider"></div>
         <div class="modal-body">
           <form class="form-horizontal" action="/" @submit.prevent="submit_edit" name="edit-form">
-            <div class="form-group" v-for="col in model.columns">
+            <div class="form-group" v-for="col in model.columns" v-if="col !== 'id'">
               <div class="col-3">
                 <label class="form-label">{{col}}: </label>
               </div>
@@ -41,7 +41,7 @@
     <div class="form-group d-inline-block float-right">
       <label class="label label-rounded label-warning p-2 d-inline-block" for="searchbar">Recherche: </label>
       <input id="searchbar" class="form-input d-inline-block" type="text" placeholder="Tri par champs..."
-             v-model="model.searchbar" @input="model.filter()">
+             v-model="model.searchbar" @input="model.filter(false)">
     </div>
 
     <br>
@@ -69,7 +69,7 @@
             <button class="btn">...</button>
             <div class="popover-container">
               <button class="btn">Éditer</button>
-              <button class="btn btn-error" @click="model.remove(row)">Supprimer</button>
+              <button class="btn btn-error" @click="model.remove(row['id'])">Supprimer</button>
             </div>
           </div>
         </td>
@@ -163,11 +163,12 @@
         for(let i = 0; i < inputs.length; i++){
           formdata[inputs[i].name] = inputs[i].value;
         }
-        if (Array(formdata).every((x) => !formdata[x]))
+        if (Array(formdata).every((x) => formdata[x] === ""))
           alert('Une ligne entièrement vide ne peut pas être insérée.');
 
         else {
           model.add(formdata);
+          alert("La ligne a bien été insérée");
           this.close_edit();
         }
       }

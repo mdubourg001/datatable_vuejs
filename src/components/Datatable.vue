@@ -8,6 +8,7 @@
           <button class="btn btn-error d-inline-block"
                   @click="model.edit_modal_opened = true">Ajouter une ligne</button>
           <div class="modal" id="edit-modal" v-bind:class="{active: model.edit_modal_opened}">
+            <a @click="model.edit_modal_opened = false" class="modal-overlay" aria-label="Close"></a>
             <div class="modal-container">
               <div class="modal-header">
                 <h4 class="d-inline-block">Ajouter un élément</h4>
@@ -15,7 +16,7 @@
               </div>
               <div class="divider"></div>
               <div class="modal-body">
-                <form class="form-horizontal" action="/" @submit.prevent="submit_edit" name="edit-form">
+                <form class="form-horizontal" action="/" @submit.prevent="" name="edit-form">
                   <div class="form-group" v-for="col in model.columns" v-if="col !== 'id'">
                     <div class="col-3">
                       <label class="form-label">{{col}}: </label>
@@ -25,7 +26,7 @@
                     </div>
                   </div>
                   <br/>
-                  <input type="submit" class="btn btn-error input-group-btn float-right" value="Insérer">
+                  <button class="btn btn-error input-group-btn float-right" @click="submit_edit()">Insérer</button>
                 </form>
               </div>
             </div>
@@ -90,7 +91,7 @@
                    :name="column" :placeholder="'Tri par ' + column + '...'">
           </td>
           <td>
-            <button class="btn tooltip" data-tooltip="Vider les filtres" @click="clear_filters()">
+            <button class="btn tooltip tooltip-left" data-tooltip="Vider les filtres" @click="clear_filters()">
               <i class="icon icon-cross"></i>
             </button>
           </td>
@@ -214,13 +215,13 @@
         for (let i = 0; i < inputs.length; i++) {
           formdata[inputs[i].name] = inputs[i].value;
         }
-        if (Array(formdata).every((x) => formdata[x] === ""))
+        if (Object.keys(formdata).every((x) => formdata[x] === ""))
           alert('Une ligne entièrement vide ne peut pas être insérée.');
 
         else {
           model.add(formdata);
           alert("La ligne a bien été insérée");
-          this.close_edit();
+          model.edit_modal_opened = false;
         }
       },
       filter_by_column: function (perform_order) {

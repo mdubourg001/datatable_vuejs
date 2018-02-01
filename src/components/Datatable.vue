@@ -5,12 +5,13 @@
     <div class="container">
       <div class="columns">
         <div class="col-6 col-md-4 col-sm-12">
-          <button class="btn btn-error d-inline-block" @click="open_edit">Ajouter une ligne</button>
-          <div class="modal" id="edit-modal">
+          <button class="btn btn-error d-inline-block"
+                  @click="model.edit_modal_opened = true">Ajouter une ligne</button>
+          <div class="modal" id="edit-modal" v-bind:class="{active: model.edit_modal_opened}">
             <div class="modal-container">
               <div class="modal-header">
                 <h4 class="d-inline-block">Ajouter un élément</h4>
-                <button class="btn btn-error modal-close float-right" @click="close_edit">✖</button>
+                <button class="btn btn-error modal-close float-right" @click="model.edit_modal_opened = false">✖</button>
               </div>
               <div class="divider"></div>
               <div class="modal-body">
@@ -62,7 +63,7 @@
         <thead>
         <tr>
           <th>
-            <button id="delete-rows-btn" class="btn btn-sm btn-error tooltip" v-if="model.checked_rows.length > 0"
+            <button id="delete-rows-btn" class="btn btn-sm btn-error tooltip tooltip-right" v-if="model.checked_rows.length > 0"
                     data-tooltip="Supprimer les lignes sélectionnés" @click="model.remove_all()">
               <i class="icon icon-cross"></i>
             </button>
@@ -205,12 +206,6 @@
       }
     },
     methods: {
-      open_edit: function () {
-        document.getElementById('edit-modal').classList.add('active');
-      },
-      close_edit: function () {
-        document.getElementById('edit-modal').classList.remove('active');
-      },
       submit_edit: function () {
         let form = document.forms.namedItem('edit-form');
         let inputs = form.getElementsByTagName('input');
@@ -258,7 +253,7 @@
   }
 
   table tr.checked {
-    background-color: rgba(255, 178, 0, 0.49);
+    background-color: rgba(255, 178, 0, 0.12);
   }
 
   table td, th {

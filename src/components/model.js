@@ -26,6 +26,7 @@ export class Model {
     this.currently_edited_data = {};
 
     this.checked_rows = [];
+    this.edit_modal_opened = false;
 
     this.order(this.columns[0]);
   }

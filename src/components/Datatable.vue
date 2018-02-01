@@ -61,6 +61,8 @@
       <table class="table table-striped table-hover">
         <thead>
         <tr>
+          <th>
+          </th>
           <th v-for="column in model.columns" @click="model.order(column)"
               :data-tooltip="'Cliquer pour trier par ' +  column" class="tooltip tooltip-bottom">
             {{ column }}
@@ -70,6 +72,12 @@
           <th>Actions</th>
         </tr>
         <tr class="hide-md">
+          <td>
+            <label class="form-switch">
+              <input type="checkbox">
+              <i class="form-icon"></i> Tous
+            </label>
+          </td>
           <td v-for="column in model.columns">
             <input class="form-input filter-input" type="text" @input="filter_by_column(false)"
                    :name="column" :placeholder="'Tri par ' + column + '...'">

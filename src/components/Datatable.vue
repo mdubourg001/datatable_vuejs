@@ -38,24 +38,30 @@
         <div class="modal-body">
           <table class="table">
             <thead>
-              <th>Clé</th>
-              <th>Valeur</th>
+            <th>Clé</th>
+            <th>Valeur</th>
             </thead>
             <tr v-for="col in model.columns">
               <td><b>{{col}}</b></td>
-              <td v-if="!model.details_editing || col === 'id'">{{model.currently_detailed_data[col]}}</td>
-              <input type="text" v-model="model.currently_detailed_data[col]" v-if="model.details_editing && col !== 'id'"
-              class="column-value text-center">
+              <td>
+                <span v-if="!model.details_editing || col === 'id'">{{model.currently_detailed_data[col]}}</span>
+                <input type="text" v-model="model.currently_detailed_data[col]"
+                       v-if="model.details_editing && col !== 'id'"
+                       class="column-value text-center">
+              </td>
             </tr>
           </table>
-          <br />
+          <br/>
           <div class="columns">
             <div class="col-6 text-center">
-              <button class="btn btn-default" v-if="model.details_editing" @click="model.close_details(false)">Annuler</button>
+              <button class="btn btn-default" v-if="model.details_editing" @click="model.close_details(false)">Annuler
+              </button>
             </div>
             <div class="col-6 text-center">
-              <button class="btn btn-error" @click="model.details_editing = true" v-if="!model.details_editing">Editer</button>
-              <button class="btn btn-success" v-if="model.details_editing" @click="model.close_details(true)">Valider</button>
+              <button class="btn btn-error" @click="model.details_editing = true" v-if="!model.details_editing">Editer
+              </button>
+              <button class="btn btn-success" v-if="model.details_editing" @click="model.close_details(true)">Valider
+              </button>
             </div>
           </div>
         </div>
@@ -66,7 +72,8 @@
       <div class="columns">
         <div class="col-6 col-md-4 col-sm-12">
           <button class="btn btn-error d-inline-block"
-                  @click="model.edit_modal_opened = true">Ajouter une ligne</button>
+                  @click="model.edit_modal_opened = true">Ajouter une ligne
+          </button>
           <div class="hide-md form-group d-inline-block">
             <label class="label label-rounded label-warning p-2 d-inline-block" for="range-select">Éléments par
               page:</label>
@@ -81,7 +88,8 @@
         </div>
 
         <div class="col-6 col-md-8 col-sm-12 form-group text-right">
-          <label class="hide-xs label label-rounded label-warning p-2 d-inline-block" for="searchbar">Recherche: </label>
+          <label class="hide-xs label label-rounded label-warning p-2 d-inline-block"
+                 for="searchbar">Recherche: </label>
           <div class="has-icon-left d-inline-block">
             <input id="searchbar" class="form-input" type="text" placeholder="Tri par champs..."
                    v-model="model.searchbar" @input="model.filter(false)">
@@ -99,7 +107,8 @@
         <thead>
         <tr>
           <th>
-            <button id="delete-rows-btn" class="btn btn-sm btn-error tooltip tooltip-right" v-if="model.checked_rows.length > 0"
+            <button id="delete-rows-btn" class="btn btn-sm btn-error tooltip tooltip-right"
+                    v-if="model.checked_rows.length > 0"
                     data-tooltip="Supprimer les lignes sélectionnés" @click="model.remove_all()">
               <i class="icon icon-cross"></i>
             </button>

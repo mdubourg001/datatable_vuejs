@@ -25,8 +25,12 @@ export class Model {
     this.currently_edited_id = -1;
     this.currently_edited_data = {};
 
+    this.currently_detailed_data = {};
+    this.details_editing = false;
+
     this.checked_rows = [];
     this.edit_modal_opened = false;
+    this.details_modal_opened = false;
 
     this.order(this.columns[0]);
   }
@@ -149,14 +153,9 @@ export class Model {
     this.displayed_data = this.filtered_data.slice(this.offset, this.offset + this.range);
   }
 
-  update_edited_row(id) {
-    this.currently_edited_id = id;
-
-    let _this = this;
-    this.raw_data.forEach(function (row) {
-      if (row['id'] === id)
-        _this.currently_edited_data = row;
-    });
+  update_edited_row(row) {
+    this.currently_edited_id = row['id'];
+    this.currently_edited_data = row;
   }
 
   edit() {
@@ -217,13 +216,38 @@ export class Model {
         this.checked_rows.push(r['id']);
     }
   }
+
+  show_details(row) {
+    this.details_modal_opened = true;
+    this.currently_detailed_data = Object.assign({}, row);
+  }
+
+  close_details(save_changes) {
+    this.details_modal_opened = false;
+    this.details_editing = false;
+
+    if (save_changes) {
+      let _this = this;
+      for (let i = 0; i < this.raw_data.length; i++) {
+        if (this.raw_data[i]['id'] === _this.currently_detailed_data['id']) {
+          _this.raw_data[i] = _this.currently_detailed_data;
+          break;
+        }
+      }
+
+      this.filtered_data = this.raw_data;
+      this.displayed_data = this.filtered_data.slice(this.offset, this.offset + this.range);
+    }
+  }
 }
 
 
 /* =========== FONCTIONS UTILITAIRES ========== */
 
 /* réalise une requête HTTP GET et retourne le résultat */
-function http_get(url) {
+function
+
+http_get(url) {
   let xhttp = new XMLHttpRequest();
   xhttp.open("GET", url, false);
   xhttp.send(null);

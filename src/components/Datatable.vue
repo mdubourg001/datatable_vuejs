@@ -2,36 +2,71 @@
 
   <div>
 
+    <div class="modal" id="edit-modal" v-bind:class="{active: model.edit_modal_opened}">
+      <a @click="model.edit_modal_opened = false" class="modal-overlay" aria-label="Close"></a>
+      <div class="modal-container">
+        <div class="modal-header">
+          <h4 class="d-inline-block">Ajouter un élément</h4>
+          <button class="btn btn-error modal-close float-right" @click="model.edit_modal_opened = false">✖</button>
+        </div>
+        <div class="divider"></div>
+        <div class="modal-body">
+          <form class="form-horizontal" action="/" @submit.prevent="" name="edit-form">
+            <div class="form-group" v-for="col in model.columns" v-if="col !== 'id'">
+              <div class="col-3">
+                <label class="form-label">{{col}}: </label>
+              </div>
+              <div class="col-9">
+                <input class="form-input" type="text" :name="col"/>
+              </div>
+            </div>
+            <br/>
+            <button class="btn btn-error input-group-btn float-right" @click="submit_edit()">Insérer</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="details-modal" v-bind:class="{active: model.details_modal_opened}">
+      <a @click="model.close_details(false)" class="modal-overlay" aria-label="Close"></a>
+      <div class="modal-container">
+        <div class="modal-header">
+          <h4 class="d-inline-block">Détails d'un élément</h4>
+          <button class="btn btn-error modal-close float-right" @click="model.close_details(false)">✖</button>
+        </div>
+        <div class="divider"></div>
+        <div class="modal-body">
+          <table class="table">
+            <thead>
+              <th>Clé</th>
+              <th>Valeur</th>
+            </thead>
+            <tr v-for="col in model.columns">
+              <td><b>{{col}}</b></td>
+              <td v-if="!model.details_editing || col === 'id'">{{model.currently_detailed_data[col]}}</td>
+              <input type="text" v-model="model.currently_detailed_data[col]" v-if="model.details_editing && col !== 'id'"
+              class="column-value text-center">
+            </tr>
+          </table>
+          <br />
+          <div class="columns">
+            <div class="col-6 text-center">
+              <button class="btn btn-default" v-if="model.details_editing" @click="model.close_details(false)">Annuler</button>
+            </div>
+            <div class="col-6 text-center">
+              <button class="btn btn-error" @click="model.details_editing = true" v-if="!model.details_editing">Editer</button>
+              <button class="btn btn-success" v-if="model.details_editing" @click="model.close_details(true)">Valider</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="container">
       <div class="columns">
         <div class="col-6 col-md-4 col-sm-12">
           <button class="btn btn-error d-inline-block"
                   @click="model.edit_modal_opened = true">Ajouter une ligne</button>
-          <div class="modal" id="edit-modal" v-bind:class="{active: model.edit_modal_opened}">
-            <a @click="model.edit_modal_opened = false" class="modal-overlay" aria-label="Close"></a>
-            <div class="modal-container">
-              <div class="modal-header">
-                <h4 class="d-inline-block">Ajouter un élément</h4>
-                <button class="btn btn-error modal-close float-right" @click="model.edit_modal_opened = false">✖</button>
-              </div>
-              <div class="divider"></div>
-              <div class="modal-body">
-                <form class="form-horizontal" action="/" @submit.prevent="" name="edit-form">
-                  <div class="form-group" v-for="col in model.columns" v-if="col !== 'id'">
-                    <div class="col-3">
-                      <label class="form-label">{{col}}: </label>
-                    </div>
-                    <div class="col-9">
-                      <input class="form-input" type="text" :name="col"/>
-                    </div>
-                  </div>
-                  <br/>
-                  <button class="btn btn-error input-group-btn float-right" @click="submit_edit()">Insérer</button>
-                </form>
-              </div>
-            </div>
-          </div>
-
           <div class="hide-md form-group d-inline-block">
             <label class="label label-rounded label-warning p-2 d-inline-block" for="range-select">Éléments par
               page:</label>
@@ -114,7 +149,8 @@
             <div class="popover popover-left">
               <button class="btn">...</button>
               <div class="popover-container">
-                <button class="btn" @click="model.update_edited_row(row['id'])">Éditer</button>
+                <button class="btn" @click="model.show_details(row)">Détails</button>
+                <button class="btn" @click="model.update_edited_row(row)">Éditer</button>
                 <button class="btn btn-error" @click="model.remove(row['id'], true)">Supprimer</button>
               </div>
             </div>
@@ -247,6 +283,7 @@
 <style scoped>
   .table-wrapper {
     overflow-x: auto;
+    overflow-y: hidden;
   }
 
   table {
@@ -270,10 +307,11 @@
   }
 
   table .popover-container {
-    padding: 15px;
+    padding-right: 15px;
     background-color: white;
     width: auto;
     border-radius: 5px;
+    z-index: 400;
   }
 
   table .filter-input {

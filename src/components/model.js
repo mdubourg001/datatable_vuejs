@@ -2,7 +2,7 @@ export class Model {
 
   constructor(mock_url) {
     /* les datas en JSON comme on les récupère sur de la requête */
-    this.raw_data = JSON.parse(http_get(mock_url));
+    this.raw_data = JSON.parse(Model.http_get(mock_url));
     /* sera notre set de données après ordering et filtering */
     this.filtered_data = this.raw_data;
     this.columns = Object.keys(this.raw_data[0]);
@@ -32,7 +32,12 @@ export class Model {
     this.edit_modal_opened = false;
     this.details_modal_opened = false;
 
+    this.toast_message = "";
+    this.toast_type = "success";
+    this.toast_displayed = false;
+
     this.order(this.columns[0]);
+    this.display_toast('primary', String(this.raw_data.length) + " lignes on été chargées.", 5000)
   }
 
   /* callback lors de l'appui sur 'Suivant' (pagination) */
@@ -189,7 +194,7 @@ export class Model {
       this.checked_rows.splice(this.checked_rows.indexOf(id), 1);
 
     if (show_alert)
-      alert("La ligne d'identifiant " + String(id) + " a bien été supprimée.");
+      this.display_toast('success', "La ligne d'identifiant " + String(id) + " a bien été supprimée.", 3000);
   }
 
   remove_all() {
@@ -209,7 +214,7 @@ export class Model {
   }
 
   check_all() {
-    if (this.checked_rows.length >= this.range) {
+    if (this.checked_rows.length >= this.displayed_data.length) {
       this.checked_rows = [];
     } else {
       for (let r of this.displayed_data)
@@ -239,17 +244,29 @@ export class Model {
       this.displayed_data = this.filtered_data.slice(this.offset, this.offset + this.range);
     }
   }
+
+
+  /* =========== FONCTIONS UTILITAIRES ========== */
+
+  /* réalise une requête HTTP GET et retourne le résultat */
+  static http_get(url) {
+    let xhttp = new XMLHttpRequest();
+    xhttp.open("GET", url, false);
+    xhttp.send(null);
+    return xhttp.responseText;
+  }
+
+  /* affiche un message sous forme de toast Spectre */
+  display_toast(type, message, duration) {
+    this.toast_type = type;
+    this.toast_message = message;
+    this.toast_displayed = true;
+    let _this = this;
+    setTimeout(function () {
+        _this.toast_displayed = false;
+    }, duration);
+  }
 }
 
 
-/* =========== FONCTIONS UTILITAIRES ========== */
 
-/* réalise une requête HTTP GET et retourne le résultat */
-function
-
-http_get(url) {
-  let xhttp = new XMLHttpRequest();
-  xhttp.open("GET", url, false);
-  xhttp.send(null);
-  return xhttp.responseText;
-}

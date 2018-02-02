@@ -2,6 +2,14 @@
 
   <div>
 
+      <div class="toast" @click="model.toast_displayed = false"
+           v-bind:class="{visible: model.toast_displayed,
+         'toast-success': model.toast_type === 'success',
+         'toast-error': model.toast_type === 'error',
+         'toast-primary': model.toast_type === 'primary'}">
+        <b>{{model.toast_message}}</b>
+      </div>
+
     <div class="modal" id="edit-modal" v-bind:class="{active: model.edit_modal_opened}">
       <a @click="model.edit_modal_opened = false" class="modal-overlay" aria-label="Close"></a>
       <div class="modal-container">
@@ -261,11 +269,11 @@
           formdata[inputs[i].name] = inputs[i].value;
         }
         if (Object.keys(formdata).every((x) => formdata[x] === ""))
-          alert('Une ligne entièrement vide ne peut pas être insérée.');
+          model.display_toast('error', "Une ligne vide ne peut pas être insérée.", 3000);
 
         else {
           model.add(formdata);
-          alert("La ligne a bien été insérée");
+          model.display_toast('success', "La ligne a bien été insérée.", 3000);
           model.edit_modal_opened = false;
         }
       },
@@ -354,5 +362,26 @@
 
   .modal label {
     text-transform: capitalize;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    padding: 30px;
+    border-radius: 15px;
+    width: inherit;
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+    z-index: 4000;
+    cursor: pointer;
+  }
+
+  .toast:hover {
+    opacity: 0.8;
+  }
+
+  .toast.visible {
+    transform: scaleY(1);
   }
 </style>

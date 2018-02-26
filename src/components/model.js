@@ -194,7 +194,7 @@ export class Model {
       this.checked_rows.splice(this.checked_rows.indexOf(id), 1);
 
     if (show_alert)
-      this.display_toast('success', "La ligne d'identifiant " + String(id) + " a bien été supprimée.", 3000);
+      this.display_toast('success', "La ligne d'identifiant " + String(id) + " a bien été supprimée.");
   }
 
   remove_all() {
@@ -203,6 +203,7 @@ export class Model {
     checked_rows_copy.forEach(function (id) {
       _this.remove(id);
     });
+    this.display_toast('success', "Toutes les lignes cochées ont été supprimées.");
     this.checked_rows = [];
   }
 
@@ -257,14 +258,11 @@ export class Model {
   }
 
   /* affiche un message sous forme de toast Spectre */
-  display_toast(type, message, duration) {
+  display_toast(type, message) {
     this.toast_type = type;
     this.toast_message = message;
     this.toast_displayed = true;
     let _this = this;
-    setTimeout(function () {
-        _this.toast_displayed = false;
-    }, duration);
   }
 }
 

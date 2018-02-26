@@ -1,7 +1,5 @@
 <template>
-
   <div>
-
       <div class="toast" @click="model.toast_displayed = false"
            v-bind:class="{visible: model.toast_displayed,
          'toast-success': model.toast_type === 'success',
@@ -78,9 +76,11 @@
 
     <div class="container">
       <div class="columns">
-        <div class="col-6 col-md-4 col-sm-12">
+        <div class="col-6 col-md-4 col-sm-4">
           <button class="btn btn-error d-inline-block"
-                  @click="model.edit_modal_opened = true">Ajouter une ligne
+                  @click="model.edit_modal_opened = true">
+                  <span class="hide-sm">Ajouter une ligne</span>
+                  <i class="icon icon-plus show-sm"></i>
           </button>
           <div class="hide-md form-group d-inline-block">
             <label class="label label-rounded label-warning p-2 d-inline-block" for="range-select">Éléments par
@@ -95,8 +95,8 @@
           </div>
         </div>
 
-        <div class="col-6 col-md-8 col-sm-12 form-group text-right">
-          <label class="hide-xs label label-rounded label-warning p-2 d-inline-block"
+        <div class="col-6 col-md-8 col-sm-8 form-group text-right">
+          <label class="hide-sm label label-rounded label-warning p-2 d-inline-block"
                  for="searchbar">Recherche: </label>
           <div class="has-icon-left d-inline-block">
             <input id="searchbar" class="form-input" type="text" placeholder="Tri par champs..."
@@ -121,7 +121,7 @@
               <i class="icon icon-cross"></i>
             </button>
           </th>
-          <th v-for="column in model.columns" @click="model.order(column)"
+          <th v-for="(column, index) in model.columns" @click="model.order(column)" v-bind:class="{'hide-sm': index > 2}"
               :data-tooltip="'Cliquer pour trier par ' +  column" class="tooltip tooltip-bottom">
             {{ column }}
             <b v-if="model.ordering === column">&#9660;</b>
@@ -156,14 +156,14 @@
             <input type="checkbox" class="form-checkbox" :checked="model.checked_rows.includes(row['id'])"
                    @click="model.check_row(row['id'])">
           </td>
-          <td v-for="column in model.columns">
+          <td v-for="(column, index) in model.columns" v-bind:class="{'hide-sm': index > 2 }">
             <input v-bind:class="{'label-lookalike': column === 'id'}" type="text" :name="column"
                    v-bind:disabled="column === 'id'" class="column-value text-center"
                    v-model="model.currently_edited_data[column]" v-if="model.currently_edited_id === row['id']">
             <span v-if="model.currently_edited_id !== row['id']">{{row[column]}}</span>
           </td>
-          <td v-if="model.currently_edited_id !== row['id']" class="hide-sm">
-            <div class="popover popover-left">
+          <td v-if="model.currently_edited_id !== row['id']">
+            <div class="popover popover-left hide-sm">
               <button class="btn">...</button>
               <div class="popover-container">
                 <button class="btn" @click="model.show_details(row)">Détails</button>
@@ -171,11 +171,9 @@
                 <button class="btn btn-error" @click="model.remove(row['id'], true)">Supprimer</button>
               </div>
             </div>
-          </td>
-          <td v-if="model.currently_edited_id !== row['id']" class="show-sm">
-            <button class="btn btn-error" @click="model.remove(row['id'])">
-              <i class="icon icon-delete"></i>
-            </button>
+            <div class="show-sm" v-if="model.columns.length > 3">
+              <button class="btn" @click="model.show_details(row)">Détails</button>
+            </div>
           </td>
           <td v-if="model.currently_edited_id === row['id']">
             <button class="btn btn-success tooltip" data-tooltip="Valider" @click="model.edit()">
@@ -249,139 +247,145 @@
 </template>
 
 <script>
-  let Model = require('./model');
-  let model = new Model.Model('https://raw.githubusercontent.com/mdubourg001/datatable_vuejs/master/src/assets/REDUCED_DATA.json');
+let Model = require("./model");
+let model = new Model.Model(
+  "https://raw.githubusercontent.com/mdubourg001/datatable_vuejs/master/src/assets/REDUCED_DATA.json"
+);
 
-  export default {
-    name: "datatable",
-    data() {
-      return {
-        model: model
+export default {
+  name: "datatable",
+  data() {
+    return {
+      model: model
+    };
+  },
+  methods: {
+    submit_edit: function() {
+      let form = document.forms.namedItem("edit-form");
+      let inputs = form.getElementsByTagName("input");
+
+      let formdata = {};
+      for (let i = 0; i < inputs.length; i++) {
+        formdata[inputs[i].name] = inputs[i].value;
+      }
+      if (Object.keys(formdata).every(x => formdata[x] === ""))
+        model.display_toast(
+          "error",
+          "Une ligne vide ne peut pas être insérée."
+        );
+      else {
+        model.add(formdata);
+        model.display_toast("success", "La ligne a bien été insérée.");
+        model.edit_modal_opened = false;
       }
     },
-    methods: {
-      submit_edit: function () {
-        let form = document.forms.namedItem('edit-form');
-        let inputs = form.getElementsByTagName('input');
-
-        let formdata = {};
-        for (let i = 0; i < inputs.length; i++) {
-          formdata[inputs[i].name] = inputs[i].value;
-        }
-        if (Object.keys(formdata).every((x) => formdata[x] === ""))
-          model.display_toast('error', "Une ligne vide ne peut pas être insérée.", 3000);
-
-        else {
-          model.add(formdata);
-          model.display_toast('success', "La ligne a bien été insérée.", 3000);
-          model.edit_modal_opened = false;
-        }
-      },
-      filter_by_column: function (perform_order) {
-        let inputs = document.getElementsByClassName('filter-input');
-        let criterias = {};
-        for (let i = 0; i < inputs.length; i++) {
-          if (inputs[i].value && inputs[i].value !== "")
-            criterias[inputs[i].getAttribute('name')] = inputs[i].value;
-        }
-        model.filter_by_column(criterias, perform_order);
-      },
-      clear_filters: function () {
-        let inputs = document.getElementsByClassName('filter-input');
-        for (let i = 0; i < inputs.length; i++) {
-          inputs[i].value = "";
-        }
-        model.filter_by_column({}, false);
+    filter_by_column: function(perform_order) {
+      let inputs = document.getElementsByClassName("filter-input");
+      let criterias = {};
+      for (let i = 0; i < inputs.length; i++) {
+        if (inputs[i].value && inputs[i].value !== "")
+          criterias[inputs[i].getAttribute("name")] = inputs[i].value;
       }
+      model.filter_by_column(criterias, perform_order);
+    },
+    clear_filters: function() {
+      let inputs = document.getElementsByClassName("filter-input");
+      for (let i = 0; i < inputs.length; i++) {
+        inputs[i].value = "";
+      }
+      model.filter_by_column({}, false);
     }
   }
+};
 </script>
 
 <style scoped>
-  .table-wrapper {
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
+.table-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
 
-  table {
-    border: 1px solid lightgray;
-  }
+table {
+  border: 1px solid lightgray;
+}
 
-  table tr.checked {
-    background-color: rgba(255, 178, 0, 0.12);
-  }
+table tr.checked {
+  background-color: rgba(255, 178, 0, 0.12);
+}
 
-  table td, th {
-    text-align: center;
-  }
+table td,
+th {
+  text-align: center;
+}
 
-  th {
-    cursor: pointer;
-  }
+th {
+  cursor: pointer;
+}
 
-  select, input {
-    width: auto;
-  }
+select,
+input {
+  width: auto;
+}
 
-  table .popover-container {
-    padding-right: 15px;
-    background-color: white;
-    width: auto;
-    border-radius: 5px;
-    z-index: 400;
-  }
+table .popover-container {
+  padding-right: 15px;
+  background-color: white;
+  width: auto;
+  border-radius: 5px;
+  z-index: 400;
+}
 
-  table .filter-input {
-    width: 100%;
-  }
+table .filter-input {
+  width: 100%;
+}
 
-  table .column-value {
-    background-color: white;
-    color: #3c3c3c;
-    border: 1px solid lightgray;
-    padding: 5px;
-  }
+table .column-value {
+  background-color: white;
+  color: #3c3c3c;
+  border: 1px solid lightgray;
+  padding: 5px;
+}
 
-  table .column-value.label-lookalike {
-    background-color: transparent;
-    border: none;
-  }
+table .column-value.label-lookalike {
+  background-color: transparent;
+  border: none;
+}
 
-  .popover-container button {
-    width: 100%;
-    margin-bottom: 5px;
-  }
+.popover-container button {
+  width: 100%;
+  margin-bottom: 5px;
+}
 
-  .modal-container {
-    padding: 30px;
-  }
+.modal-container {
+  padding: 30px;
+}
 
-  .modal input:not([type="submit"]) {
-    width: 100%;
-  }
+.modal input:not([type="submit"]) {
+  width: 100%;
+}
 
-  .modal label {
-    text-transform: capitalize;
-  }
+.modal label {
+  text-transform: capitalize;
+}
 
-  .toast {
-    position: fixed;
-    bottom: 25px;
-    right: 25px;
-    padding: 30px;
-    border-radius: 15px;
-    width: inherit;
-    transform: scaleY(0);
-    transition: transform 0.3s ease;
-    z-index: 4000;
-    cursor: pointer;
-  }
+.toast {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  padding: 30px;
+  border-radius: 5px;
+  width: inherit;
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+  z-index: 4000;
+  cursor: pointer;
+}
 
-  .toast:hover {
-    opacity: 0.8;
-  }
+.toast:hover {
+  opacity: 0.8;
+}
 
-  .toast.visible {
-    transform: scaleY(1);
-  }
+.toast.visible {
+  transform: scaleY(1);
+}
 </style>

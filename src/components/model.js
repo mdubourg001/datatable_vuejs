@@ -1,7 +1,7 @@
 export class Model {
 
   constructor(mock_url) {
-    /* les datas en JSON comme on les récupère sur de la requête */
+    /* les datas en JSON comme on les récupère de la requête */
     this.raw_data = JSON.parse(Model.http_get(mock_url));
     /* sera notre set de données après ordering et filtering */
     this.filtered_data = this.raw_data;
